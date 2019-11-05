@@ -130,7 +130,6 @@ def handle_message(message):
                     message.chat.id, text="I couldn't find this one =(")
 
     except Exception as ex:
-        print('HUI')
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
         error = template.format(type(ex).__name__, ex.args)
         error_write(message, error)
