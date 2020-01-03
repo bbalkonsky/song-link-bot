@@ -1,11 +1,17 @@
 import requests
 import json
 from scripts.services import SERVICES
+import configparser
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+api_token = config['ACCESS']['API_TOKEN']
 
 def get_api_request(message):
     params = (
         ('url', message),
-        ('key', '788c8d13-5d08-464d-838f-5825ce494d29'),
+        ('key', api_token),
     )
     return requests.get(
         'https://api.song.link/v1-alpha.1/links', params=params)
