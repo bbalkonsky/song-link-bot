@@ -2,14 +2,16 @@ import requests
 import json
 from scripts.services import SERVICES
 
-
-def get_links(message, user_on):
+def get_api_request(message):
     params = (
         ('url', message),
         ('key', '788c8d13-5d08-464d-838f-5825ce494d29'),
     )
-    response = requests.get(
+    return requests.get(
         'https://api.song.link/v1-alpha.1/links', params=params)
+
+
+def get_links(response, user_on):
     result_list = []
 
     if response.status_code == 200:
@@ -38,3 +40,9 @@ def search_vk(song_name):
     song_name = song_name.replace(' ', '%20').replace(
         '(', '%28').replace(')', '%29')
     return (SERVICES['vk']['alias'], 'https://vk.com/search?c%5Bper_page%5D=200&c%5Bq%5D={}&c%5Bsection%5D=audio'.format(song_name))
+
+
+def get_song_name(response):
+    song = json.loads(response.text)
+    for i in song['entitiesByUniqueId'].values():
+        return '{} - {}'.format(i['artistName'], i['title'])

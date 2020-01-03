@@ -30,8 +30,8 @@ def log_write(message):
     username = message.chat.username if chat_type == 'channel' else message.from_user.username
     first_name = message.chat.title if chat_type == 'channel' else message.from_user.first_name
     last_name = message.author_signature if chat_type == 'channel' else message.from_user.last_name
-    chat_id = message.chat.id if chat_type == 'group' else 'None'
-    chat_title = message.chat.title if chat_type == 'group' else 'None'
+    chat_id = message.chat.id if chat_type == 'group' or chat_type == 'supergroup' else 'None'
+    chat_title = message.chat.title if chat_type == 'group' or chat_type == 'supergroup' else 'None'
     language = 'None' if chat_type == 'channel' else message.from_user.language_code
     time = datetime.datetime.fromtimestamp(
         message.date).strftime("%Y-%m-%d %H:%M:%S")

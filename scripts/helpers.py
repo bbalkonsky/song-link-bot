@@ -3,8 +3,9 @@ from scripts.services import SERVICES
 
 def is_it_link(text):
     for service in SERVICES:
-        if SERVICES[service]['link'] in text:
-            return True
+        for link in SERVICES[service]['link']:
+            if link in text:
+                return True
     return False
 
 
@@ -30,7 +31,7 @@ def description_text(message):
     return res, link.strip()
 
 
-def send_from(message):
+def sent_from(message, link):
     if message.from_user.first_name != None and message.from_user.last_name:
         name = '{} {}'.format(message.from_user.first_name,
                               message.from_user.last_name)
@@ -40,5 +41,4 @@ def send_from(message):
         name = '{}'.format(message.from_user.first_name)
     else:
         name = '{GODS OF MUSIC}'
-
-    return 'Sent by {}'.format(name)
+    return 'Sent by[:]({}) {}'.format(link, name)

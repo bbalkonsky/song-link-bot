@@ -1,14 +1,12 @@
-﻿from telebot import types
-import telebot
-import time
+﻿import telebot
 import configparser
 
-from scripts.loging import log_write, error_write
-from scripts.services import SERVICES, INSTRUCTIONS_RU, INSTRUCTIONS_EN
-from scripts.helpers import is_it_link, toggle_service, description_text, send_from
-from scripts.keyboards import create_keyboard
-from scripts.linksearch import get_links, search_vk
-from scripts.queries import first_connect, get_user_services, set_user_services, toggle_annotations, get_annotations, set_last_request, get_last_request, create_log_bases
+from scripts.loging import *
+from scripts.services import *
+from scripts.helpers import *
+from scripts.keyboards import *
+from scripts.linksearch import *
+from scripts.queries import *
 
 
 config = configparser.ConfigParser()
@@ -103,28 +101,24 @@ def handle_message(message):
             if annotations == 0:
                 new_text = ''
 
-            links_list = get_links('{}'.format(clear_link), user_services)
+            api_response = get_api_request('{}'.format(clear_link))
+            links_list = get_links(api_response, user_services)
+
             if len(links_list) > 0:
-                links_to_send = str()
-                for link in links_list:
-                    link_title = '[{}]'.format(link[0])
-                    link_link = '({})'.format(link[1])
-                    links_to_send = links_to_send + \
-                        '\n{}{}'.format(link_title, link_link)
+                links_keyboard = create_links_keyboard(links_list)
 
-                sender = str('')
-                if message.chat.type == 'group':
-                    sender = send_from(message)
+                if message.chat.type == 'group' or message.chat.type == 'supergroup':
+                    description = sent_from(message, clear_link)
                 elif message.chat.type == 'channel':
-                    sender = 'from @MuzShareBot'
+                    description = '[from]({})  @muzShareBot'.format(clear_link)
+                else:
+                    description = '[{}]({})'.format(u'\U0001F3A7', message.text)
 
-                bot.send_message(message.chat.id,
-                                 text='{}\n{}\n\n{}\n\n'.format(
-                                     new_text, links_to_send, sender),
-                                 parse_mode='Markdown')
-
+                bot.send_message(message.chat.id, text='{}\n\n{}'.format(new_text, description), parse_mode='Markdown',
+                                 reply_markup=links_keyboard)
                 bot.delete_message(chat_id=message.chat.id,
                                    message_id=message.message_id)
+
             else:
                 bot.send_message(
                     message.chat.id, text="I couldn't find this one =(")
