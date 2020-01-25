@@ -21,8 +21,7 @@ bot = telebot.TeleBot(token)
 @bot.callback_query_handler(func=lambda callback: callback.data == 'done')
 def handle_callback_done(callback_query):
     bot.delete_message(chat_id=callback_query.message.chat.id,
-                       message_id=get_last_request(callback_query.message.chat.id))
-    set_last_request(callback_query.message.chat.id, 0)
+                       message_id=callback_query.message.message_id)
     bot.send_message(callback_query.message.chat.id,
                      text='Changes have been saved.')
     show_services(callback_query.message)
@@ -31,10 +30,10 @@ def handle_callback_done(callback_query):
 @bot.callback_query_handler(func=lambda callback: True)
 def handle_callback(callback_query):
     user_services_code = get_user_services(callback_query.message.chat.id)
-    new_user_services_code = toggle_service(
-        callback_query.data, user_services_code)
+    new_user_services_code = toggle_service(callback_query.data, user_services_code)
     set_user_services(callback_query.message.chat.id, new_user_services_code)
-    edit_services(callback_query.message)
+    keyboard = create_keyboard(user_services_code)
+    bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, text='Services',reply_markup=keyboard)
 
 
 @bot.channel_post_handler(commands=['edit'])
@@ -42,17 +41,7 @@ def handle_callback(callback_query):
 def edit_services(message):
     user_services_code = get_user_services(message.chat.id)
     keyboard = create_keyboard(user_services_code)
-    sended = bot.send_message(
-        message.chat.id, text='Services:\n', reply_markup=keyboard)
-
-    last_req = get_last_request(message.chat.id)
-    sended
-
-    if last_req == 0:
-        set_last_request(sended.chat.id, sended.message_id)
-    else:
-        bot.delete_message(chat_id=message.chat.id, message_id=last_req)
-        set_last_request(sended.chat.id, sended.message_id)
+    bot.send_message(message.chat.id, text='Services', reply_markup=keyboard)
 
 
 @bot.channel_post_handler(commands=['show'])

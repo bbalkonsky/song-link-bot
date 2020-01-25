@@ -8,14 +8,15 @@ def create_keyboard(user_services):
     keyboard = types.InlineKeyboardMarkup()
     buttons = []
     for key in sorted(list(sorted_services.keys())):
-        if sorted_services[key]:
-            buttons.append(types.InlineKeyboardButton(text='-{}'.format(SERVICES[key]['alias']),
-                                                      callback_data='{}'.format(SERVICES[key]['name']))
-                           )
-        else:
-            buttons.append(types.InlineKeyboardButton(text='+{}'.format(SERVICES[key]['alias']),
-                                                      callback_data='{}'.format(SERVICES[key]['name']))
-                           )
+        if key in SERVICES:
+            if sorted_services[key]:
+                buttons.append(types.InlineKeyboardButton(text='\U00002705 {}'.format(SERVICES[key]['alias']),
+                                                          callback_data='{}'.format(SERVICES[key]['name']))
+                               )
+            else:
+                buttons.append(types.InlineKeyboardButton(text='\U0000274C {}'.format(SERVICES[key]['alias']),
+                                                          callback_data='{}'.format(SERVICES[key]['name']))
+                               )
     buttons.append(types.InlineKeyboardButton(
         text='Done', callback_data='done'))
 
